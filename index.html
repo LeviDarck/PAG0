@@ -13,27 +13,31 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
     h1 {
       color: #d63384;
-      font-size: 2em;
-      margin-top: 15vh;
-      padding: 0 10px;
+      font-size: 6vw;
+      margin: 0 10px 2vh;
     }
 
     .button-container {
-      margin-top: 30px;
+      margin-top: 2vh;
     }
 
     button {
-      font-size: 1.2em;
+      font-size: 5vw;
       background-color: #ffb6c1;
       color: white;
       border: none;
       border-radius: 15px;
-      padding: 10px 20px;
-      margin: 10px;
+      padding: 2vh 4vw;
+      margin: 1vh;
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -47,7 +51,7 @@
     }
 
     .emoji {
-      font-size: 1.5em;
+      font-size: 6vw;
       margin: 10px;
     }
 
@@ -57,7 +61,27 @@
       pointer-events: auto;
       user-select: none;
       transition: transform 0.1s ease;
-      touch-action: none; /* necesario para eventos táctiles */
+      touch-action: none;
+    }
+
+    .corazon-confeti {
+      position: fixed;
+      font-size: 70px;
+      color: #ff4d88;
+      animation: explotar 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @keyframes explotar {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0.5) rotate(720deg);
+      }
     }
   </style>
 </head>
@@ -66,11 +90,14 @@
   <div id="contenido">
     <h1>💖 ¿Quieres ser mi novia, niña hermosa de bellos ojos? 💖</h1>
     <div class="button-container">
-      <button onclick="respuestaSI()">Sí 💘</button>
+      <button onclick="respuestaSI(this)">Sí 💘</button>
       <button onclick="respuestaNO()">No 😢</button>
     </div>
   </div>
 
+  <!-- 🎵 Reproductor oculto -->
+  <audio id="musica" src="cancion.mp3" preload="auto"></audio>
+  <canvas id="visualizer"></canvas>	
   <script>
     let estado = 0;
 
@@ -78,13 +105,48 @@
       document.getElementById('contenido').innerHTML = '';
     }
 
-    function respuestaSI() {
-      limpiarContenido();
-      const contenedor = document.getElementById('contenido');
-      contenedor.innerHTML = `
-        <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
-        <div class="emoji">🌸💗🐰🎀</div>
-      `;
+    function respuestaSI(boton) {
+      lanzarCorazonesDesdeBoton(boton);
+
+      // ▶️ Reproducir canción
+      const musica = document.getElementById('musica');
+      musica.play();
+
+      setTimeout(() => {
+        limpiarContenido();
+        const contenedor = document.getElementById('contenido');
+        contenedor.innerHTML = `
+          <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
+          <div class="emoji">🌸💗🐰🎀</div>
+        `;
+      }, 800);
+    }
+
+    function lanzarCorazonesDesdeBoton(boton) {
+      const rect = boton.getBoundingClientRect();
+      const origenX = rect.left + rect.width / 2;
+      const origenY = rect.top + rect.height / 2;
+
+      for (let i = 0; i < 200; i++) {
+        const corazon = document.createElement("div");
+        corazon.classList.add("corazon-confeti");
+        corazon.textContent = "💖";
+
+        const dx = (Math.random() - 0.5) * 600 + "px";
+        const dy = (Math.random() - 0.5) * 600 + "px";
+
+        corazon.style.setProperty('--dx', dx);
+        corazon.style.setProperty('--dy', dy);
+
+        corazon.style.left = origenX + "px";
+        corazon.style.top = origenY + "px";
+
+        document.body.appendChild(corazon);
+
+        setTimeout(() => {
+          corazon.remove();
+        }, 1000);
+      }
     }
 
     function respuestaNO() {
@@ -95,7 +157,7 @@
         contenedor.innerHTML = `
           <h1>😔 Sé que quieres, di que sí 🥺💓</h1>
           <div class="button-container">
-            <button onclick="respuestaSI()">Sí 💘</button>
+            <button onclick="respuestaSI(this)">Sí 💘</button>
             <button id="no2" onclick="moverBoton()" onmouseover="moverBoton()">No 🙃</button>
           </div>
         `;
@@ -128,13 +190,17 @@
   <img src="Cinnamoroll2.png" class="floaty" style="width: 180px;" id="img2">
   <img src="hellokittty1.png" class="floaty" style="width: 170px;" id="img3">
   <img src="hellokittty2.png" class="floaty" style="width: 200px;" id="img4">
+  <img src="lirio.png" class="floaty" style="width: 160px;" id="img5">
+  <img src="clavel.png" class="floaty" style="width: 160px;" id="img6">
 
   <script>
     const images = [
       { id: "img1", x: 100, y: 100, dx: 0.5, dy: 0.5 },
       { id: "img2", x: 300, y: 200, dx: -0.3, dy: 0.4 },
       { id: "img3", x: 200, y: 400, dx: 0.4, dy: -0.4 },
-      { id: "img4", x: 500, y: 250, dx: -0.5, dy: -0.3 }
+      { id: "img4", x: 500, y: 250, dx: -0.2, dy: 0.1 },
+      { id: "img5", x: 700, y: 350, dx: 0.8, dy: -0.8 },
+      { id: "img6", x: 900, y: 550, dx: -0.7, dy: 0.3 },
     ];
 
     function animateFloaties() {
@@ -167,7 +233,6 @@
 
       let offsetX, offsetY;
 
-      // Mouse events
       el.addEventListener("mousedown", e => {
         img.dragging = true;
         offsetX = e.clientX - el.offsetLeft;
@@ -187,7 +252,6 @@
         img.dragging = false;
       });
 
-      // Touch events
       el.addEventListener("touchstart", e => {
         img.dragging = true;
         const touch = e.touches[0];
@@ -202,7 +266,7 @@
           img.y = touch.clientY - offsetY;
           el.style.left = img.x + "px";
           el.style.top = img.y + "px";
-          e.preventDefault(); // evita el scroll de la página
+          e.preventDefault();
         }
       });
 
@@ -214,3 +278,4 @@
 
 </body>
 </html>
+
