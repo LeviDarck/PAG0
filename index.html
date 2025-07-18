@@ -48,6 +48,14 @@
       font-size: 1.5em;
       margin: 10px;
     }
+
+    .floaty {
+      position: absolute;
+      z-index: 0;
+      pointer-events: auto;
+      user-select: none;
+      transition: transform 0.1s ease;
+    }
   </style>
 </head>
 <body>
@@ -70,10 +78,10 @@
     function respuestaSI() {
       limpiarContenido();
       const contenedor = document.getElementById('contenido');
-      contenedor.innerHTML = 
+      contenedor.innerHTML = `
         <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
         <div class="emoji">🌸💗🐰🎀</div>
-      ;
+      `;
     }
 
     function respuestaNO() {
@@ -81,13 +89,13 @@
         estado = 1;
         limpiarContenido();
         const contenedor = document.getElementById('contenido');
-        contenedor.innerHTML = 
+        contenedor.innerHTML = `
           <h1>😔 Sé que quieres, di que sí 🥺💓</h1>
           <div class="button-container">
             <button onclick="respuestaSI()">Sí 💘</button>
             <button id="no2" onclick="moverBoton()" onmouseover="moverBoton()">No 🙃</button>
           </div>
-        ;
+        `;
         posicionarBoton();
       }
     }
@@ -100,8 +108,8 @@
       const randomX = Math.floor(Math.random() * maxX);
       const randomY = Math.floor(Math.random() * maxY);
 
-      boton.style.left = ${randomX}px;
-      boton.style.top = ${randomY}px;
+      boton.style.left = `${randomX}px`;
+      boton.style.top = `${randomY}px`;
     }
 
     function posicionarBoton() {
@@ -111,84 +119,71 @@
       boton.style.transform = 'translate(-50%, -50%)';
     }
   </script>
-<!-- Imágenes decorativas flotantes -->
-<img src="Cinnamoroll1.png" class="floaty" style="width: 160px;" id="img1">
-<img src="Cinnamoroll2.png" class="floaty" style="width: 180px;" id="img2">
-<img src="hellokittty1.png" class="floaty" style="width: 170px;" id="img3">
-<img src="hellokittty2.png" class="floaty" style="width: 200px;" id="img4">
 
-<style>
-  .floaty {
-    position: absolute;
-    z-index: 0;
-    pointer-events: auto;
-    user-select: none;
-    transition: transform 0.1s ease;
-  }
-</style>
+  <!-- Imágenes decorativas flotantes -->
+  <img src="Cinnamoroll1.png" class="floaty" style="width: 160px;" id="img1">
+  <img src="Cinnamoroll2.png" class="floaty" style="width: 180px;" id="img2">
+  <img src="hellokittty1.png" class="floaty" style="width: 170px;" id="img3">
+  <img src="hellokittty2.png" class="floaty" style="width: 200px;" id="img4">
 
-<script>
-  // Datos de cada imagen
-  const images = [
-    { id: "img1", x: 100, y: 100, dx: 0.5, dy: 0.5 },
-    { id: "img2", x: 300, y: 200, dx: -0.3, dy: 0.4 },
-    { id: "img3", x: 200, y: 400, dx: 0.4, dy: -0.4 },
-    { id: "img4", x: 500, y: 250, dx: -0.5, dy: -0.3 }
-  ];
+  <script>
+    const images = [
+      { id: "img1", x: 100, y: 100, dx: 0.5, dy: 0.5 },
+      { id: "img2", x: 300, y: 200, dx: -0.3, dy: 0.4 },
+      { id: "img3", x: 200, y: 400, dx: 0.4, dy: -0.4 },
+      { id: "img4", x: 500, y: 250, dx: -0.5, dy: -0.3 }
+    ];
 
-  // Animación de rebote
-  function animateFloaties() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    function animateFloaties() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      images.forEach(img => {
+        const el = document.getElementById(img.id);
+        if (!img.dragging) {
+          img.x += img.dx;
+          img.y += img.dy;
+
+          if (img.x <= 0 || img.x + el.width >= w) img.dx *= -1;
+          if (img.y <= 0 || img.y + el.height >= h) img.dy *= -1;
+
+          el.style.left = img.x + "px";
+          el.style.top = img.y + "px";
+        }
+      });
+
+      requestAnimationFrame(animateFloaties);
+    }
+
+    animateFloaties();
 
     images.forEach(img => {
       const el = document.getElementById(img.id);
-      if (!img.dragging) {
-        img.x += img.dx;
-        img.y += img.dy;
+      el.style.left = img.x + "px";
+      el.style.top = img.y + "px";
 
-        if (img.x <= 0 || img.x + el.width >= w) img.dx *= -1;
-        if (img.y <= 0 || img.y + el.height >= h) img.dy *= -1;
+      let offsetX, offsetY;
 
-        el.style.left = img.x + "px";
-        el.style.top = img.y + "px";
-      }
+      el.addEventListener("mousedown", e => {
+        img.dragging = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+      });
+
+      document.addEventListener("mousemove", e => {
+        if (img.dragging) {
+          img.x = e.clientX - offsetX;
+          img.y = e.clientY - offsetY;
+          el.style.left = img.x + "px";
+          el.style.top = img.y + "px";
+        }
+      });
+
+      document.addEventListener("mouseup", () => {
+        img.dragging = false;
+      });
     });
-
-    requestAnimationFrame(animateFloaties);
-  }
-
-  // Activar animación
-  animateFloaties();
-
-  // Hacer arrastrables las imágenes
-  images.forEach(img => {
-    const el = document.getElementById(img.id);
-    el.style.left = img.x + "px";
-    el.style.top = img.y + "px";
-
-    let offsetX, offsetY;
-
-    el.addEventListener("mousedown", e => {
-      img.dragging = true;
-      offsetX = e.clientX - el.offsetLeft;
-      offsetY = e.clientY - el.offsetTop;
-    });
-
-    document.addEventListener("mousemove", e => {
-      if (img.dragging) {
-        img.x = e.clientX - offsetX;
-        img.y = e.clientY - offsetY;
-        el.style.left = img.x + "px";
-        el.style.top = img.y + "px";
-      }
-    });
-
-    document.addEventListener("mouseup", () => {
-      img.dragging = false;
-    });
-  });
-</script>
+  </script>
 
 </body>
 </html>
