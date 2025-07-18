@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>¿Quieres ser mi novia? 💖</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
@@ -17,7 +18,8 @@
     h1 {
       color: #d63384;
       font-size: 2em;
-      margin-top: 15%;
+      margin-top: 15vh;
+      padding: 0 10px;
     }
 
     .button-container {
@@ -55,6 +57,7 @@
       pointer-events: auto;
       user-select: none;
       transition: transform 0.1s ease;
+      touch-action: none; /* necesario para eventos táctiles */
     }
   </style>
 </head>
@@ -164,6 +167,7 @@
 
       let offsetX, offsetY;
 
+      // Mouse events
       el.addEventListener("mousedown", e => {
         img.dragging = true;
         offsetX = e.clientX - el.offsetLeft;
@@ -180,6 +184,29 @@
       });
 
       document.addEventListener("mouseup", () => {
+        img.dragging = false;
+      });
+
+      // Touch events
+      el.addEventListener("touchstart", e => {
+        img.dragging = true;
+        const touch = e.touches[0];
+        offsetX = touch.clientX - el.offsetLeft;
+        offsetY = touch.clientY - el.offsetTop;
+      });
+
+      el.addEventListener("touchmove", e => {
+        if (img.dragging) {
+          const touch = e.touches[0];
+          img.x = touch.clientX - offsetX;
+          img.y = touch.clientY - offsetY;
+          el.style.left = img.x + "px";
+          el.style.top = img.y + "px";
+          e.preventDefault(); // evita el scroll de la página
+        }
+      });
+
+      el.addEventListener("touchend", () => {
         img.dragging = false;
       });
     });
