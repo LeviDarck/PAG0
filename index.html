@@ -104,14 +104,16 @@
       document.getElementById('contenido').innerHTML = '';
     }
 
-    function respuestaSI() {
-      limpiarContenido();
-      const contenedor = document.getElementById('contenido');
-      contenedor.innerHTML = `
-        <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
-        <div class="emoji">🌸💗🐰🎀</div>
-      `;
-    }
+  function respuestaSI() {
+  limpiarContenido();
+  const contenedor = document.getElementById('contenido');
+  contenedor.innerHTML = `
+    <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
+    <div class="emoji">🌸💗🐰🎀</div>
+  `;
+  const audio = document.getElementById('audio');
+  audio.play(); // Iniciar música con clic
+}
 
     function respuestaNO() {
       if (estado === 0) {
