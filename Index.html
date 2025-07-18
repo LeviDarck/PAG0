@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>¿Quieres ser mi novia? 💖</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    body {
+      background-color: #ffe4f1;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #d63384;
+      font-size: 2em;
+      margin-top: 15%;
+    }
+
+    .button-container {
+      margin-top: 30px;
+    }
+
+    button {
+      font-size: 1.2em;
+      background-color: #ffb6c1;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff69b4;
+    }
+
+    #no2 {
+      position: absolute;
+    }
+
+    .emoji {
+      font-size: 1.5em;
+      margin: 10px;
+    }
+
+    .floaty {
+      position: absolute;
+      z-index: 1;
+      pointer-events: auto;
+      user-select: none;
+      transition: transform 0.1s ease;
+    }
+
+    /* Para las barras SVG */
+    svg#heartBars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    .bar {
+      fill: red;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Contenido interactivo principal -->
+  <div id="contenido">
+    <h1>💖 ¿Quieres ser mi novia, niña hermosa de bellos ojos? 💖</h1>
+    <div class="button-container">
+      <button onclick="respuestaSI()">Sí 💘</button>
+      <button onclick="respuestaNO()">No 😢</button>
+    </div>
+  </div>
+
+  <!-- Audio de fondo -->
+  <audio id="audio" src="musica.mp3" autoplay loop></audio>
+
+  <!-- SVG para los latidos/barras -->
+  <svg id="heartBars" viewBox="0 0 1000 800"></svg>
+
+  <!-- Imágenes decorativas flotantes -->
+  <img src="Cinnamoroll1.png" class="floaty" style="width: 160px;" id="img1">
+  <img src="Cinnamoroll2.png" class="floaty" style="width: 180px;" id="img2">
+  <img src="hellokittty1.png" class="floaty" style="width: 170px;" id="img3">
+  <img src="hellokittty2.png" class="floaty" style="width: 200px;" id="img4">
+
+  <!-- Lógica JS para botones y respuesta -->
+  <script>
+    let estado = 0;
+
+    function limpiarContenido() {
+      document.getElementById('contenido').innerHTML = '';
+    }
+
+    function respuestaSI() {
+      limpiarContenido();
+      const contenedor = document.getElementById('contenido');
+      contenedor.innerHTML = `
+        <h1>💞 Sabía que dirías que sí, amor de mi vida, mi niña hermosa 💞</h1>
+        <div class="emoji">🌸💗🐰🎀</div>
+      `;
+    }
+
+    function respuestaNO() {
+      if (estado === 0) {
+        estado = 1;
+        limpiarContenido();
+        const contenedor = document.getElementById('contenido');
+        contenedor.innerHTML = `
+          <h1>😔 Sé que quieres, di que sí 🥺💓</h1>
+          <div class="button-container">
+            <button onclick="respuestaSI()">Sí 💘</button>
+            <button id="no2" onclick="moverBoton()" onmouseover="moverBoton()">No 🙃</button>
+          </div>
+        `;
+        posicionarBoton();
+      }
+    }
+
+    function moverBoton() {
+      const boton = document.getElementById('no2');
+      const maxX = window.innerWidth - boton.offsetWidth;
+      const maxY = window.innerHeight - boton.offsetHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      boton.style.left = `${randomX}px`;
+      boton.style.top = `${randomY}px`;
+    }
+
+    function posicionarBoton() {
+      const boton = document.getElementById('no2');
+      boton.style.left = '50%';
+      boton.style.top = '50%';
+      boton.style.transform = 'translate(-50%, -50%)';
+    }
+  </script>
+
+  <!-- Animación de imágenes flotantes -->
+  <script>
+    const images = [
+      { id: "img1", x: 100, y: 100, dx: 0.5, dy: 0.5 },
+      { id: "img2", x: 300, y: 200, dx: -0.3, dy: 0.4 },
+      { id: "img3", x: 200, y: 400, dx: 0.4, dy: -0.4 },
+      { id: "img4", x: 500, y: 250, dx: -0.5, dy: -0.3 }
+    ];
+
+    function animateFloaties() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      images.forEach(img => {
+        const el = document.getElementById(img.id);
+        if (!img.dragging) {
+          img.x += img.dx;
+          img.y += img.dy;
+          if (img.x <= 0 || img.x + el.width >= w) img.dx *= -1;
+          if (img.y <= 0 || img.y + el.height >= h) img.dy *= -1;
+          el.style.left = img.x + "px";
+          el.style.top = img.y + "px";
+        }
+      });
+      requestAnimationFrame(animateFloaties);
+    }
+
+    animateFloaties();
+
+    images.forEach(img => {
+      const el = document.getElementById(img.id);
+      el.style.left = img.x + "px";
+      el.style.top = img.y + "px";
+      let offsetX, offsetY;
+
+      el.addEventListener("mousedown", e => {
+        img.dragging = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+      });
+
+      document.addEventListener("mousemove", e => {
+        if (img.dragging) {
+          img.x = e.clientX - offsetX;
+          img.y = e.clientY - offsetY;
+          el.style.left = img.x + "px";
+          el.style.top = img.y + "px";
+        }
+      });
+
+      document.addEventListener("mouseup", () => {
+        img.dragging = false;
+      });
+    });
+  </script>
+
+  <!-- Script de visualización del corazón con música -->
+  <script src="heartbars.js"></script>
+
+</body>
+</html>
